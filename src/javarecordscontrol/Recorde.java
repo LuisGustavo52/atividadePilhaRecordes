@@ -1,18 +1,19 @@
 package javarecordscontrol;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 
 public class Recorde {
-        private Date dataRecorde;
+        private LocalDate dataRecorde;
         private String nome;
         private double tempo;
 
-    public Date getDataRecorde() {
+    public LocalDate getDataRecorde() {
         return dataRecorde;
     }
 
-    public void setDataRecorde(Date dataRecorde) {
+    public void setDataRecorde(LocalDate dataRecorde) {
         this.dataRecorde = dataRecorde;
     }
 
@@ -34,8 +35,8 @@ public class Recorde {
     
     @Override
     public String toString() {
-     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    return "Recorde [nome=" + nome + ", dataRecorde=" + sdf.format(dataRecorde) + ", tempo=" + tempo + " segundos]";
+    String dataFormatada = this.dataRecorde.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    return "Recorde [nome=" + nome + ", dataRecorde=" + dataFormatada + ", tempo=" + tempo + " segundos]";
 }
             
 
