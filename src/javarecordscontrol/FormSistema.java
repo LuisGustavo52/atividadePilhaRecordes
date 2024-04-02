@@ -5,14 +5,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 public class FormSistema extends javax.swing.JFrame {
     // Declarar estruturas
     
-    Pilha pilhaRecorde = new Pilha<Recorde>(4);
-    ArrayList<String> removidos = new ArrayList<>();
+    Pilha pilhaRecorde = new Pilha<Recorde>(10);
+    Pilha pilhaAux = new Pilha<Recorde>(10);
+    
 
     public FormSistema() {
         initComponents();
@@ -173,18 +175,17 @@ public class FormSistema extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtTempo, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLimpar))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnLimpar)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
-
-        btnLimpar.getAccessibleContext().setAccessibleDescription("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -207,43 +208,72 @@ public class FormSistema extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
+    
     
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        Recorde novoRecorde = new Recorde();
-        
-        novoRecorde.setDataRecorde(LocalDate.parse(txtData.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        novoRecorde.setTempo(Double.parseDouble(txtTempo.getText()));
-        novoRecorde.setNome(txtNome.getText());
-        
-        pilhaRecorde.push(novoRecorde);
-        atualizarDados();
-
+        if(!pilhaRecorde.isEmpty()){
+            Recorde recordeAtual = (Recorde) pilhaRecorde.peek();
+            if (Double.parseDouble(txtTempo.getText()) < recordeAtual.getTempo()) {
+                adicionarRecorde();            
+            }else{
+                txtTempo.getCursor();
+                JOptionPane.showMessageDialog(null, "Apenas adicione recordes maiores do que o atual", "Erro", JOptionPane.WARNING_MESSAGE);
+            }      
+        }else{
+            adicionarRecorde();
+        }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void atualizarDados(){
         listPilha.setText(pilhaRecorde.toString());
+        listAux.setText(pilhaAux.toString());
         
-        StringBuilder string = new StringBuilder();  
-        for (String removido : removidos) {
-            string.append(removido);
+    }
+    
+    private void adicionarRecorde(){
+        Recorde novoRecorde = new Recorde();
+        
+        try{
+           novoRecorde.setDataRecorde(LocalDate.parse(txtData.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            novoRecorde.setTempo(Double.parseDouble(txtTempo.getText()));
+            novoRecorde.setNome(txtNome.getText());
+
+            pilhaRecorde.push(novoRecorde);
+            atualizarDados();
+            txtTempo.setText("");
+            txtData.setText("");
+            txtNome.setText("");
+            txtNome.getCursor(); 
+        }catch (NullPointerException ex) {
+            JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Erro", JOptionPane.WARNING_MESSAGE);
+        }catch (DateTimeParseException ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.WARNING_MESSAGE);
+            txtData.setText("");
+            txtData.getCursor();
+        }catch(NumberFormatException ex){
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.WARNING_MESSAGE);
+            txtTempo.setText("");
+            txtTempo.getCursor();
+        
         }
         
-        listAux.setText(string.toString());
     }
     
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         Recorde novoRecorde = new Recorde();
-        
-        
-
-        
+        pilhaAux.push(pilhaRecorde.pop());
+        atualizarDados();        
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
+        pilhaAux.limpar();
+        pilhaRecorde.limpar();
         txtTempo.setText("");
         txtData.setText("");
         txtNome.setText("");
+        listAux.setText("");
+        listPilha.setText("");
+        atualizarDados();
     }//GEN-LAST:event_btnLimparActionPerformed
 
     /**

@@ -4,7 +4,7 @@ public class Pilha<T> {
     private T[] elementos;
     
     public Pilha(int tamanho){
-          elementos =(T[]) new Object[tamanho];
+          elementos = (T[]) new Object[tamanho];
           this.topo = -1;
     }
     public boolean isFull(){
@@ -37,6 +37,10 @@ public class Pilha<T> {
         return topo+1;
     }
     
+    public void limpar(){
+        topo = -1;
+    }
+    
     public T peek(){
         return elementos[topo];
     }
@@ -44,9 +48,11 @@ public class Pilha<T> {
     @Override
     public String toString(){
         StringBuilder retorno = new StringBuilder();
-        for(int i=topo;i>=0;i--)
+        for(int i=topo;i>=0;i--){
             retorno.append(elementos[i] + "\n");
-        retorno.append("-----------");
+            retorno.append("-----------\n");
+        }
+        
         return retorno.toString();
     }
     

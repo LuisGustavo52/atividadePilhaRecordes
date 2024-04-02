@@ -36,7 +36,7 @@ public class Recorde {
     @Override
     public String toString() {
     String dataFormatada = this.dataRecorde.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    return "Recorde [nome=" + nome + ", dataRecorde=" + dataFormatada + ", tempo=" + tempo + " segundos]";
+    return "Nome=" + nome + ", Data=" + dataFormatada + ", Tempo=" + tempo + " segundos]";
 }
             
 
